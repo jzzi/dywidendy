@@ -26,7 +26,7 @@ namespace Dywidendy.UI
         public void Execute(object parameter)
         {
             _owner.ResultComputed = _model.Get(_owner.ValueToGet);
-            _owner.RateDifferential = _owner.ResultComputed.GetRateDifferential();
+            _owner.RateDifferential = _owner.ResultComputed.GetRateDifferential(_owner.RateToAdd);
             _owner.CurrencyAmount = _model.CurrencyAmount();
             foreach (var item in _owner.ResultComputed)
             {

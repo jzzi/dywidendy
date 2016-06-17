@@ -25,7 +25,6 @@ namespace Dywidendy.UI
         private ICommand _getCommand;
         private ICommand _openFileCommand;
         private ICommand _saveFileCommand;
-        private IEnumerable<IChangeDepositEvent> _eventsToShow;
         private DateTime _dateToAdd;
         private ICommand _getRateToAddCommand;
 
@@ -66,7 +65,6 @@ namespace Dywidendy.UI
             GetCommand = new GetCommand(this, currencyModel);
             OpenFileCommand = new OpenFileCommand(this, currencyModel);
             SaveFileCommand = new SaveFileCommand(this);
-            GetRateToAddCommand = new GetRateToAddCommand(this, new NbpCurrenciesSource());
             CurrencyAmount = currencyModel.CurrencyAmount();
         }
 
@@ -205,34 +203,5 @@ namespace Dywidendy.UI
             MessageBox.Show(msg, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
-    internal class GetRateToAddCommand : ICommand
-    {
-        private readonly WplacViewModel _wplacViewModel;
-        private readonly ICurrenciesSource _ccySource;
-
-        public GetRateToAddCommand(WplacViewModel wplacViewModel, ICurrenciesSource ccySource)
-        {
-            _wplacViewModel = wplacViewModel;
-            _ccySource = ccySource;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public async void Execute(object parameter)
-        {
-            var ccyRate = await _ccySource.GetByDate("EUR", _wplacViewModel.DateToAdd);
-            if (ccyRate == null)
-            {
-                _wplacViewModel.NotifyError("Nie udało się pobrać waluty z tego dnia.");
-                return;
-            }
-            _wplacViewModel.RateToAdd = ccyRate.Rate;
-        }
-
-        public event EventHandler CanExecuteChanged;
-    }
+    
 }

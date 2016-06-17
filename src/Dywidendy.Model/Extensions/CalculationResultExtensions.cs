@@ -7,12 +7,11 @@ namespace Dywidendy.Model.Extensions
 {
     public static class CalculationResultExtensions
     {
-        public static RateDifferentialResult GetRateDifferential(this CalculationResult @this)
+        public static RateDifferentialResult GetRateDifferential(this CalculationResult @this, decimal refRate)
         {
-            var refRate = @this.First().Rate;
             return
                 new RateDifferentialResult(
-                    @this.Result.Skip(1).Select(p => new RateDifferential(refRate, p.Rate, p.Money)));
+                    @this.Select(p => new RateDifferential(refRate, p.Rate, p.Money)));
         }
     }
 

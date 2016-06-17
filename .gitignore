@@ -1,3 +1,7 @@
 /src/*.DotSettings
 /src/*.suo
 /src/Dywidendy.UI/*.user
+/src/Dywidendy.UI/bin
+/src/Dywidendy.UI/obj
+/src/Dywidendy.Model/obj
+/src/Dywidendy.Model/bin

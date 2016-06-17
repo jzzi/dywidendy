@@ -31,7 +31,7 @@ namespace Dywidendy.UI.Annotations
   /// Indicates that the value of the marked element could never be <c>null</c>.
   /// </summary>
   /// <example><code>
-  /// [NotNull] object Foo() {
+  /// [NotNull] object Currencies() {
   ///   return null; // Warning: Possible 'null' assignment
   /// }
   /// </code></example>
@@ -69,7 +69,7 @@ namespace Dywidendy.UI.Annotations
   /// [StringFormatMethod("message")]
   /// void ShowError(string message, params object[] args) { /* do something */ }
   /// 
-  /// void Foo() {
+  /// void Currencies() {
   ///   ShowError("Failed: {0}"); // Warning: Non-existing argument in format string
   /// }
   /// </code></example>
@@ -110,7 +110,7 @@ namespace Dywidendy.UI.Annotations
   /// the parameter of <see cref="System.ArgumentNullException"/>.
   /// </summary>
   /// <example><code>
-  /// void Foo(string param) {
+  /// void Currencies(string param) {
   ///   if (param == null)
   ///     throw new ArgumentNullException("par"); // Warning: Cannot resolve symbol
   /// }
@@ -134,7 +134,7 @@ namespace Dywidendy.UI.Annotations
   /// </list>
   /// </remarks>
   /// <example><code>
-  /// public class Foo : INotifyPropertyChanged {
+  /// public class Currencies : INotifyPropertyChanged {
   ///   public event PropertyChangedEventHandler PropertyChanged;
   /// 
   ///   [NotifyPropertyChangedInvocator]
@@ -232,7 +232,7 @@ namespace Dywidendy.UI.Annotations
   /// </summary>
   /// <example><code>
   /// [LocalizationRequiredAttribute(true)]
-  /// class Foo {
+  /// class Currencies {
   ///   string str = "my string"; // Warning: Localizable string
   /// }
   /// </code></example>
@@ -437,7 +437,7 @@ namespace Dywidendy.UI.Annotations
   /// and stored somewhere, meaning that all other ways to get this value must be consolidated with existing one.
   /// </summary>
   /// <example><code>
-  /// class Foo {
+  /// class Currencies {
   ///   [ProvidesContext] IBarService _barService = ...;
   /// 
   ///   void ProcessNode(INode node) {
@@ -747,9 +747,9 @@ namespace Dywidendy.UI.Annotations
   /// indicates that this parameter is an MVC action name.
   /// </summary>
   /// <example><code>
-  /// [ActionName("Foo")]
+  /// [ActionName("Currencies")]
   /// public ActionResult Login(string returnUrl) {
-  ///   ViewBag.ReturnUrl = Url.Action("Foo"); // OK
+  ///   ViewBag.ReturnUrl = Url.Action("Currencies"); // OK
   ///   return RedirectToAction("Bar"); // Error: Cannot resolve action
   /// }
   /// </code></example>

@@ -54,6 +54,7 @@
                             <DatePicker Grid.Column="1" SelectedDate="{Binding DateToAdd}"></DatePicker>
                         </Grid>
                         <Button Command="{Binding AddCommand}">Dodaj</Button>
+                        <local:RateFromBank></local:RateFromBank>
                     </StackPanel>
                 </TabItem>
                 <TabItem Header="Wypłata">

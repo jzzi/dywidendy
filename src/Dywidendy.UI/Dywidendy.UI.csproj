@@ -74,6 +74,10 @@
     <Compile Include="GetCommand.cs" />
     <Compile Include="OpenFileCommand.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="RateFromBank.xaml.cs">
+      <DependentUpon>RateFromBank.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RateFromBankViewModel.cs" />
     <Compile Include="SaveFileCommand.cs" />
     <Compile Include="Window.xaml.cs">
       <DependentUpon>Window.xaml</DependentUpon>
@@ -83,6 +87,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RateFromBank.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Window.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -22,14 +22,19 @@ namespace Dywidendy.Model
                 client.BaseAddress = new Uri("http://api.nbp.pl/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response =
-                    await client.GetAsync("api/exchangerates/tables/A/" + date.ToString("yyyy-MM-dd"));
-                if (response.IsSuccessStatusCode)
+                for (int i = 0; i < 10; i++)
                 {
-                    var product = await response.Content.ReadAsAsync<NbpApiCurrenciesResponse[]>();
-                    return product[0].Rates.Single(p => p.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase));
+                    var response =
+                    await client.GetAsync("api/exchangerates/tables/A/" + date.ToString("yyyy-MM-dd"));
 
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var product = await response.Content.ReadAsAsync<NbpApiCurrenciesResponse[]>();
+                        return product[0].Rates.Single(p => p.Code.Equals(code, StringComparison.InvariantCultureIgnoreCase));
+
+                    }
                 }
+                
                 return null;
             }
             
