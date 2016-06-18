@@ -10,7 +10,8 @@ namespace Dywidendy.Model
 {
     public interface ICurrenciesSource
     {
-         Task<CurrencyRate> GetByDate(string code, DateTime date);
+        Task<CurrencyRate> GetByDate(string code, DateTime date);
+        Task<string[]> GetSupported();
     }
 
     public class NbpCurrenciesSource : ICurrenciesSource
@@ -38,6 +39,12 @@ namespace Dywidendy.Model
                 return null;
             }
             
+        }
+
+        public Task<string[]> GetSupported()
+        {
+            var result = new []{"EUR", "USD", "CHF"};
+            return Task.FromResult(result);
         }
     }
 

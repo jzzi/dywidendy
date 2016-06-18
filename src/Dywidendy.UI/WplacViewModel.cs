@@ -1,14 +1,13 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Dywidendy.Model;
 using Dywidendy.UI.Annotations;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
 using Dywidendy.Model.Extensions;
+
+using DependencyAttribute = Microsoft.Practices.Unity.DependencyAttribute;
 
 namespace Dywidendy.UI
 {
@@ -32,12 +31,10 @@ namespace Dywidendy.UI
         public WplacViewModel()
         {
             Reload(new List<IChangeDepositEvent>());
-            AddViewModel = new RateFromBankViewModel();
-            GetViewModel = new RateFromBankViewModel();
         }
 
        
-
+        [Dependency]
         public RateFromBankViewModel AddViewModel
         {
             get { return _addViewModel; }
@@ -49,6 +46,7 @@ namespace Dywidendy.UI
             }
         }
 
+        [Dependency]
         public RateFromBankViewModel GetViewModel
         {
             get { return _getViewModel; }

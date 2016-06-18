@@ -11,15 +11,22 @@ namespace Dywidendy.UI
         private decimal _rate;
         private DateTime _date;
         private string _currency;
-        private readonly NbpCurrenciesSource _currenciesService;
+        private readonly ICurrenciesSource _currenciesService;
         private decimal _value;
+        private string[] _currencies;
 
-        public RateFromBankViewModel()
+        public RateFromBankViewModel(ICurrenciesSource currenciesService)
         {
-            _currenciesService = new NbpCurrenciesSource();
+            _currenciesService = currenciesService;
             _currency = "EUR";
             _date = DateTime.Today;
             SetRate();
+            SetCurrencies();
+        }
+
+        private async void SetCurrencies()
+        {
+            Currencies = await _currenciesService.GetSupported();
         }
 
         public decimal Rate
@@ -51,9 +58,18 @@ namespace Dywidendy.UI
             if (result == null) return;
             Rate = result.Rate;
         }
-        
 
-        public string[] Currencies => new[] { "EUR", "USD", "CHF" };
+
+        public string[] Currencies
+        {
+            get { return _currencies; }
+            set
+            {
+                if (Equals(value, _currencies)) return;
+                _currencies = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string Currency
         {
