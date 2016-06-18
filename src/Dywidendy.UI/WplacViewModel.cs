@@ -14,30 +14,52 @@ namespace Dywidendy.UI
 {
     public class WplacViewModel : INotifyPropertyChanged
     {
-        private decimal _valueToAdd;
-        private decimal _rateToAdd;
-        private decimal _valueToGet;
+        
+        
+        
         private CalculationResult _resultComputed;
         private RateDifferentialResult _rateDifferential;
-        private decimal _currencyAmount;
         private ObservableCollection<IChangeDepositEvent> _events;
         private ICommand _addCommand;
         private ICommand _getCommand;
         private ICommand _openFileCommand;
         private ICommand _saveFileCommand;
-        private DateTime _dateToAdd;
-        private ICommand _getRateToAddCommand;
+        private RateFromBankViewModel _addViewModel;
+        private RateFromBankViewModel _getViewModel;
+        private decimal _currencyAmount;
 
-        public DateTime DateToAdd
+
+        public WplacViewModel()
         {
-            get { return _dateToAdd; }
+            Reload(new List<IChangeDepositEvent>());
+            AddViewModel = new RateFromBankViewModel();
+            GetViewModel = new RateFromBankViewModel();
+        }
+
+       
+
+        public RateFromBankViewModel AddViewModel
+        {
+            get { return _addViewModel; }
             set
             {
-                if (value.Equals(_dateToAdd)) return;
-                _dateToAdd = value;
+                if (Equals(value, _addViewModel)) return;
+                _addViewModel = value;
                 OnPropertyChanged();
             }
         }
+
+        public RateFromBankViewModel GetViewModel
+        {
+            get { return _getViewModel; }
+            set
+            {
+                if (Equals(value, _getViewModel)) return;
+                _getViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public ObservableCollection<IChangeDepositEvent> Events
         {
@@ -50,12 +72,7 @@ namespace Dywidendy.UI
             }
         }
                
-        public WplacViewModel()
-        {
-            Reload(new List<IChangeDepositEvent>());
-            RateToAdd = 1;
-            DateToAdd = DateTime.Today;
-        }
+        
 
         internal void Reload(IEnumerable<IChangeDepositEvent> events)
         {
@@ -68,39 +85,17 @@ namespace Dywidendy.UI
             CurrencyAmount = currencyModel.CurrencyAmount();
         }
 
-        public ICommand GetRateToAddCommand
+        public decimal CurrencyAmount
         {
-            get { return _getRateToAddCommand; }
+            get { return _currencyAmount; }
             set
             {
-                if (Equals(value, _getRateToAddCommand)) return;
-                _getRateToAddCommand = value;
+                if (value == _currencyAmount) return;
+                _currencyAmount = value;
                 OnPropertyChanged();
             }
         }
 
-
-        public decimal ValueToAdd
-        {
-            get { return _valueToAdd; }
-            set
-            {
-                if (value.Equals(_valueToAdd)) return;
-                _valueToAdd = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public decimal RateToAdd
-        {
-            get { return _rateToAdd; }
-            set
-            {
-                if (value.Equals(_rateToAdd)) return;
-                _rateToAdd = value;
-                OnPropertyChanged();
-            }
-        }
 
         public ICommand AddCommand
         {
@@ -146,17 +141,6 @@ namespace Dywidendy.UI
             }
         }
 
-        public decimal ValueToGet
-        {
-            get { return _valueToGet; }
-            set
-            {
-                if (value.Equals(_valueToGet)) return;
-                _valueToGet = value;
-                OnPropertyChanged();
-            }
-        }
-
         public CalculationResult ResultComputed
         {
             get { return _resultComputed; }
@@ -178,17 +162,7 @@ namespace Dywidendy.UI
                 OnPropertyChanged();
             }
         }
-
-        public decimal CurrencyAmount
-        {
-            get { return _currencyAmount; }
-            set
-            {
-                if (value.Equals(_currencyAmount)) return;
-                _currencyAmount = value;
-                OnPropertyChanged();
-            }
-        }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -196,11 +170,6 @@ namespace Dywidendy.UI
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void NotifyError(string msg)
-        {
-            MessageBox.Show(msg, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
     

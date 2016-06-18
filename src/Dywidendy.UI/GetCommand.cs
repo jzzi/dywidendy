@@ -25,12 +25,12 @@ namespace Dywidendy.UI
 
         public void Execute(object parameter)
         {
-            _owner.ResultComputed = _model.Get(_owner.ValueToGet);
-            _owner.RateDifferential = _owner.ResultComputed.GetRateDifferential(_owner.RateToAdd);
+            _owner.ResultComputed = _model.Get(_owner.GetViewModel.Value);
+            _owner.RateDifferential = _owner.ResultComputed.GetRateDifferential(_owner.GetViewModel.Rate);
             _owner.CurrencyAmount = _model.CurrencyAmount();
             foreach (var item in _owner.ResultComputed)
             {
-                _owner.Events.Add(new ChangeDepositEvent(-item.Money, item.Rate, DateTime.Now));
+                _owner.Events.Add(new ChangeDepositEvent(-item.Money, item.Rate, _owner.GetViewModel.Date));
             }
         }
 

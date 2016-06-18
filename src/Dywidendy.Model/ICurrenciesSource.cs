@@ -25,7 +25,7 @@ namespace Dywidendy.Model
                 for (int i = 0; i < 10; i++)
                 {
                     var response =
-                    await client.GetAsync("api/exchangerates/tables/A/" + date.ToString("yyyy-MM-dd"));
+                    await client.GetAsync("api/exchangerates/tables/A/" + date.AddDays(-i).ToString("yyyy-MM-dd"));
 
                     if (response.IsSuccessStatusCode)
                     {

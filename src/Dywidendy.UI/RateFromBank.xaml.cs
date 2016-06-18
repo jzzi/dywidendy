@@ -17,7 +17,7 @@ using Dywidendy.Model;
 namespace Dywidendy.UI
 {
     /// <summary>
-    /// Interaction logic for RateFromBank.xaml
+    /// Interaction logic for AddViewModel.xaml
     /// </summary>
     public partial class RateFromBank : UserControl
     {

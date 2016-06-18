@@ -5,3 +5,5 @@
 /src/Dywidendy.UI/obj
 /src/Dywidendy.Model/obj
 /src/Dywidendy.Model/bin
+/src/packages
+/src/.vs

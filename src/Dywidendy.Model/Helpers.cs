@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -12,7 +13,9 @@ namespace Dywidendy.Model
             return File.ReadLines(path).Select(p =>
             {
                 var parts = p.Split(';');
-                return new ChangeDepositEvent(decimal.Parse(parts[0]), decimal.Parse(parts[1]), DateTime.Parse(parts[2]));
+                return new ChangeDepositEvent(decimal.Parse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture),
+                    decimal.Parse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture),
+                    DateTime.ParseExact(parts[0], "yyyy-MM-dd", CultureInfo.InvariantCulture));
             });
         }
     }

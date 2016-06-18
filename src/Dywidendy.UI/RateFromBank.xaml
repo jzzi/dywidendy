@@ -12,6 +12,14 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Label HorizontalContentAlignment="Right">Kwota</Label>
+            <TextBox Grid.Column="1" Text="{Binding Value}"></TextBox>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
             <Label HorizontalContentAlignment="Right">Waluta:</Label>
             <ComboBox Grid.Column="1" SelectedValue="{Binding Currency}" MinWidth="100" ItemsSource="{Binding Currencies}"></ComboBox>
         </Grid>

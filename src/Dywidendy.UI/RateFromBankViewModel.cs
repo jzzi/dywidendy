@@ -12,6 +12,7 @@ namespace Dywidendy.UI
         private DateTime _date;
         private string _currency;
         private readonly NbpCurrenciesSource _currenciesService;
+        private decimal _value;
 
         public RateFromBankViewModel()
         {
@@ -63,6 +64,17 @@ namespace Dywidendy.UI
                 _currency = value;
                 OnPropertyChanged();
                 SetRate();
+            }
+        }
+
+        public decimal Value
+        {
+            get { return _value; }
+            set
+            {
+                if (value == _value) return;
+                _value = value;
+                OnPropertyChanged();
             }
         }
 

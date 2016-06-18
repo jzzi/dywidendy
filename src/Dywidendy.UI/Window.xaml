@@ -26,35 +26,9 @@
             </Menu>
             <TabControl>
                 <TabItem Header="Wpłata">
-                    <StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Right">Wartość:</Label>
-                            <TextBox Grid.Column="1" Text="{Binding ValueToAdd}" MinWidth="100"></TextBox>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                <ColumnDefinition Width="3*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Right">Kurs:</Label>
-                            <TextBox Grid.Column="1" Text="{Binding RateToAdd}" MinWidth="100"></TextBox>
-                            <Button Command="{Binding GetRateToAddCommand}" Grid.Column="2">NBP</Button>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Right">Data:</Label>
-                            <DatePicker Grid.Column="1" SelectedDate="{Binding DateToAdd}"></DatePicker>
-                        </Grid>
+                    <StackPanel>                        
+                        <local:RateFromBank DataContext="{Binding AddViewModel}"></local:RateFromBank>
                         <Button Command="{Binding AddCommand}">Dodaj</Button>
-                        <local:RateFromBank></local:RateFromBank>
                     </StackPanel>
                 </TabItem>
                 <TabItem Header="Wypłata">
@@ -67,14 +41,7 @@
                             <Label HorizontalContentAlignment="Right">Pozostało:</Label>
                             <TextBlock Grid.Column="1" Text="{Binding CurrencyAmount}" MinWidth="100"></TextBlock>
                         </Grid>                        
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Right">Wartość:</Label>
-                            <TextBox Grid.Column="1" Text="{Binding ValueToGet}" MinWidth="100"></TextBox>
-                        </Grid>
+                        <local:RateFromBank DataContext="{Binding GetViewModel}"></local:RateFromBank>
                         <Button Command="{Binding GetCommand}">Pobierz</Button>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -82,10 +49,10 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" FontSize="16">Różnica kursowa (suma):</TextBlock>
-                            <TextBlock Grid.Column="1" FontSize="16" Text="{Binding ReteDifferential.JustMoney}" />
+                            <TextBlock Grid.Column="1" FontSize="16" Text="{Binding RateDifferential.JustMoney}" />
                         </Grid>
                         <DataGrid ItemsSource="{Binding ResultComputed}"></DataGrid>                        
-                        <DataGrid ItemsSource="{Binding ReteDifferential}"></DataGrid>
+                        <DataGrid ItemsSource="{Binding RateDifferential}"></DataGrid>
                     </StackPanel>
                 </TabItem>
             </TabControl>
