@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows.Input;
 using Dywidendy.Model;
 
@@ -22,9 +23,8 @@ namespace Dywidendy.UI
 
         public void Execute(object parameter)
         {
-            _model.Add(new MoneyWithRate(_owner.AddViewModel.Value, _owner.AddViewModel.Rate));
-            _owner.Events.Add(new ChangeDepositEvent(_owner.AddViewModel.Value, _owner.AddViewModel.Rate, _owner.AddViewModel.Date));
-            _owner.CurrencyAmount = _model.CurrencyAmount();
+            _model.Deposit(_owner.AddViewModel.Value, _owner.AddViewModel.Rate, _owner.AddViewModel.Date);
+            _owner.RefreshValues();
         }
 
         public event EventHandler CanExecuteChanged;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows.Input;
 using Dywidendy.Model;
 using Dywidendy.Model.Extensions;
@@ -25,13 +26,8 @@ namespace Dywidendy.UI
 
         public void Execute(object parameter)
         {
-            _owner.ResultComputed = _model.Get(_owner.GetViewModel.Value);
-            _owner.RateDifferential = _owner.ResultComputed.GetRateDifferential(_owner.GetViewModel.Rate);
-            _owner.CurrencyAmount = _model.CurrencyAmount();
-            foreach (var item in _owner.ResultComputed)
-            {
-                _owner.Events.Add(new ChangeDepositEvent(-item.Money, item.Rate, _owner.GetViewModel.Date));
-            }
+            _model.Withdrawn(_owner.GetViewModel.Value, _owner.GetViewModel.Rate, _owner.GetViewModel.Date);
+            _owner.RefreshValues();
         }
 
         public event EventHandler CanExecuteChanged;

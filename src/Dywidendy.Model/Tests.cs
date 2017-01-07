@@ -11,53 +11,55 @@ namespace Dywidendy.Model
     public class Tests
     {
         [Test]
-        public void When_add_money_can_get_all()
+        public void When_getting_all_money_with_same_rate_differential_is_zero()
         {
             var model = new CurrencyModel(() =>
             new List<IChangeDepositEvent>
             {
-                new ChangeDepositEvent(200, 2, DateTime.Now)
+                new MoneyChanged(200, 2, DateTime.Now)
             });
-
-            var result = model.Get(200).Result.First();
-
-            Assert.That(result.Money, Is.EqualTo(200));
-            Assert.That(result.Rate, Is.EqualTo(2));
+            model.Withdrawn(200, 2, DateTime.Now);
+            var result = model.Withdrawns.First();
+            
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(0));
         }
 
         [Test]
-        public void When_add_money_can_get_part()
+        public void When_getting_part_money_with_same_rate_differential_is_zero()
         {
             var model = new CurrencyModel(() =>
                 new List<IChangeDepositEvent>
                 {
-                    new ChangeDepositEvent(200, 2, DateTime.Now)
+                    new MoneyChanged(200, 2, DateTime.Now)
                 });
+            model.Withdrawn(150, 2, DateTime.Now);
+            var result = model.Withdrawns.First();
 
-            var result = model.Get(150).Result.First();
-
-            Assert.That(result.Money, Is.EqualTo(150));
-            Assert.That(result.Rate, Is.EqualTo(2));
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(0));
         }
 
         [Test]
-        public void When_add_money_can_get_all_by_parts()
+        public void When_getting_part_by_part_differential_is_zero()
         {
             var model = new CurrencyModel(() =>
             new List<IChangeDepositEvent>
             {
-                new ChangeDepositEvent(200, 2, DateTime.Now)
+                new MoneyChanged(200, 2, DateTime.Now)
             });
 
-            var result = model.Get(150).Result.First();
+            model.Withdrawn(150, 2, DateTime.Now);
+            var result = model.Withdrawns.First();
 
-            Assert.That(result.Money, Is.EqualTo(150));
-            Assert.That(result.Rate, Is.EqualTo(2));
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(0));
 
-            result = model.Get(50).Result.First();
+            model.Withdrawn(50, 2, DateTime.Now);
+            result = model.Withdrawns.First();
 
-            Assert.That(result.Money, Is.EqualTo(50));
-            Assert.That(result.Rate, Is.EqualTo(2));
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(0));
         }
 
         [Test]
@@ -66,41 +68,71 @@ namespace Dywidendy.Model
             var model = new CurrencyModel(() =>
                 new List<IChangeDepositEvent>
                 {
-                    new ChangeDepositEvent(100, 1, DateTime.Now),
-                    new ChangeDepositEvent(200, 2, DateTime.Now),
-                    new ChangeDepositEvent(500, 3, DateTime.Now)
+                    new MoneyChanged(100, 1, DateTime.Now),
+                    new MoneyChanged(200, 2, DateTime.Now),
+                    new MoneyChanged(500, 3, DateTime.Now)
                 });
 
-            var result = model.Get(700).Result;
+            model.Withdrawn(700, 4, DateTime.Now);
+            var result = model.Withdrawns.First();
 
-            Assert.That(result.First().Money, Is.EqualTo(100));
-            Assert.That(result.First().Rate, Is.EqualTo(1));
+            Assert.That(result.Deposits[0].Ammount, Is.EqualTo(100));
+            Assert.That(result.Deposits[0].Rate, Is.EqualTo(1));
 
-            Assert.That(result[1].Money, Is.EqualTo(200));
-            Assert.That(result[1].Rate, Is.EqualTo(2));
+            Assert.That(result.Deposits[1].Ammount, Is.EqualTo(200));
+            Assert.That(result.Deposits[1].Rate, Is.EqualTo(2));
 
-            Assert.That(result[2].Money, Is.EqualTo(400));
-            Assert.That(result[2].Rate, Is.EqualTo(3));
+            Assert.That(result.Deposits[2].Ammount, Is.EqualTo(400));
+            Assert.That(result.Deposits[2].Rate, Is.EqualTo(3));
+
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(1100));
 
 
             model = new CurrencyModel(() =>
                 new List<IChangeDepositEvent>
                 {
-                    new ChangeDepositEvent(100, 1, DateTime.Now),
-                    new ChangeDepositEvent(200, 2, DateTime.Now),
-                    new ChangeDepositEvent(-200, 2, DateTime.Now),
-                    new ChangeDepositEvent(500, 3, DateTime.Now)
+                    new MoneyChanged(100, 1, DateTime.Now),
+                    new MoneyChanged(200, 2, DateTime.Now),
+                    new MoneyChanged(-200, 2, DateTime.Now),
+                    new MoneyChanged(500, 3, DateTime.Now)
                 });
-            result = model.Get(150).Result;
+            model.Withdrawn(150, 5, DateTime.Now);
+            result = model.Withdrawns[1];
 
-            Assert.That(result.First().Money, Is.EqualTo(100));
-            Assert.That(result.First().Rate, Is.EqualTo(2));
+            Assert.That(result.Deposits.First().Ammount, Is.EqualTo(100));
+            Assert.That(result.Deposits.First().Rate, Is.EqualTo(2));
 
-            Assert.That(result[1].Money, Is.EqualTo(50));
-            Assert.That(result[1].Rate, Is.EqualTo(3));
+            Assert.That(result.Deposits[1].Ammount, Is.EqualTo(50));
+            Assert.That(result.Deposits[1].Rate, Is.EqualTo(3));
+
+            model = new CurrencyModel(() =>
+               new List<IChangeDepositEvent>
+               {
+                    new MoneyChanged(100, 1, DateTime.Now),
+                    new MoneyChanged(200, 2, DateTime.Now),
+                    new MoneyChanged(-200, 2, DateTime.Now),
+                    new MoneyChanged(500, 3, DateTime.Now)
+               });
+            model.Withdrawn(900, 5, DateTime.Now);
+            result = model.Withdrawns[1];
+
+            Assert.That(result.Deposits.First().Ammount, Is.EqualTo(100));
+            Assert.That(result.Deposits.First().Rate, Is.EqualTo(2));
+
+            Assert.That(result.Deposits[1].Ammount, Is.EqualTo(500));
+            Assert.That(result.Deposits[1].Rate, Is.EqualTo(3));
+
+            Assert.That(result.ToDoMoney, Is.EqualTo(300));
+            Assert.That(result.RateDifferential, Is.Null);
+
+            model.Deposit(300, 6, DateTime.Now);
+
+            Assert.That(result.ToDoMoney, Is.EqualTo(0));
+            Assert.That(result.RateDifferential, Is.EqualTo(1000));
         }
 
-        [Test]
+        [Test, Ignore("Just perfomrance test")]
         public void Tests_from_files()
         {
             var sw = new Stopwatch();
@@ -113,7 +145,7 @@ namespace Dywidendy.Model
 
         }
 
-        [Test]
+        [Test, Ignore("Just perfomrance test")]
         public void GenerateFile()
         {
             const string path = @"c:\temp\temp2.dat";

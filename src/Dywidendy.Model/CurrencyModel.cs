@@ -8,22 +8,41 @@ namespace Dywidendy.Model
     {
         public CurrencyModel(Func<IEnumerable<IChangeDepositEvent>> getEvents)
         {
-            _queue = new Queue<MoneyWithRate>();
+            _queue = new Queue<Deposit>();
+            _toDoQueue = new Queue<ToDoItem>();
+            _events = new List<IChangeDepositEvent>();
+            Withdrawns = new List<Withdrawn>();
             Restore(getEvents);
         }
 
-        private decimal _currentRate;
+        public IList<Withdrawn> Withdrawns { get; }
+
+        public IList<IChangeDepositEvent> Events
+        {
+            get { return _events.ToArray(); }
+        }
+
+        private Deposit _currentDeposit;
         private decimal _moneyOfCurrentRate;
 
-        private readonly Queue<MoneyWithRate> _queue;
 
-        public void Add(MoneyWithRate value)
+        private readonly Queue<Deposit> _queue;
+        private readonly Queue<ToDoItem> _toDoQueue;
+        private readonly IList<IChangeDepositEvent> _events;
+
+        public void Deposit(decimal ammount, decimal rate, DateTime date)
         {
-            if (value.Rate <= 0) throw new RateMustBePositveException();
-            _queue.Enqueue(value);
-            if (_currentRate == 0)
+            if (rate <= 0) throw new RateMustBePositveException();
+            _queue.Enqueue(new Deposit(ammount, rate, date));
+            if (_currentDeposit == null)
             {
                 SetFirstRate();
+            }
+            _events.Add(new MoneyChanged(ammount, rate, date));
+            Withdrawn todo = null; 
+            while ((todo = Withdrawns.FirstOrDefault(p=>p.ToDoMoney > 0)) != null && _currentDeposit!= null)
+            {
+                Withdrawn(todo);
             }
         }
 
@@ -32,28 +51,40 @@ namespace Dywidendy.Model
             ProcceedToNextRate();
         }
 
-        public CalculationResult Get(decimal value)
+        public void Withdrawn(decimal value, decimal rate, DateTime date)
         {
-            return Get(value, CalculationResult.Empty());
+            _events.Add(new MoneyChanged(-value, rate, date));
+            var withdrawn = new Withdrawn(value, rate, date);
+            Withdrawns.Add(withdrawn);
+            Withdrawn(withdrawn);
         }
 
-        private CalculationResult Get(decimal value, CalculationResult current)
+        private void Withdrawn(Withdrawn withdrawn)
         {
             while (true)
             {
-                if (_moneyOfCurrentRate >= value)
+                var toDoMoney = withdrawn.ToDoMoney;
+                if (_currentDeposit == null) break;
+                if (_moneyOfCurrentRate >= withdrawn.ToDoMoney)
                 {
-                    _moneyOfCurrentRate -= value;
-                    return current.Add(new MoneyWithRate(value, _currentRate));
+                    _moneyOfCurrentRate -= toDoMoney;
+                    withdrawn.AddParentDeposit(new Deposit(toDoMoney, _currentDeposit.Rate,
+                        _currentDeposit.Date));
+                    break;
                 }
                 else
                 {
-                    var moneyToDo = value - _moneyOfCurrentRate;
-                    var tempResult = current.Add(new MoneyWithRate(_moneyOfCurrentRate, _currentRate));
+                    withdrawn.AddParentDeposit(new Deposit(_moneyOfCurrentRate, _currentDeposit.Rate, _currentDeposit.Date));
                     _moneyOfCurrentRate = 0;
-                    ProcceedToNextRate();
-                    value = moneyToDo;
-                    current = tempResult;
+                    if (_queue.Any())
+                    {
+                        ProcceedToNextRate();
+                    }
+                    else
+                    {
+                       _currentDeposit = null;
+                        break;
+                    }
                 }
             }
         }
@@ -61,8 +92,8 @@ namespace Dywidendy.Model
         private void ProcceedToNextRate()
         {
             var current = _queue.Dequeue();
-            _currentRate = current.Rate;
-            _moneyOfCurrentRate = current.Money;
+            _currentDeposit = current;
+            _moneyOfCurrentRate = current.Ammount;
         }
 
         private void Restore(Func<IEnumerable<IChangeDepositEvent>> getEvents)
@@ -71,20 +102,62 @@ namespace Dywidendy.Model
             {
                 if (item.Value > 0)
                 {
-                    Add(new MoneyWithRate(item.Value, item.Rate));
+                    Deposit(item.Value, item.Rate, item.Date);
                 }
                 else
                 {
-                    Get(-item.Value);
+                    Withdrawn(-item.Value, item.Rate, item.Date);
                 }
             }
         }
 
         public decimal CurrencyAmount()
         {
-            return _queue.AsEnumerable().Sum(p => p.Money) + _moneyOfCurrentRate;
+            return _queue.AsEnumerable().Sum(p => p.Ammount) + _moneyOfCurrentRate;
         }
 
+        public void Save(Action<IEnumerable<IChangeDepositEvent>> saveEvents)
+        {
+            saveEvents(_events);
+        }
 
+    }
+
+    public class Withdrawn
+    {
+        public decimal Ammount { get; }
+        public decimal RefRate { get; }
+        public DateTime Date { get; }
+        public IList<Deposit> Deposits { get; }
+
+        public Withdrawn(decimal ammount, decimal refRate, DateTime date)
+        {
+            Ammount = ammount;
+            RefRate = refRate;
+            Date = date;
+            Deposits = new List<Deposit>();
+        }
+
+        public decimal ToDoMoney { get { return Ammount - Deposits.Sum(p => p.Ammount); } }
+        public decimal? RateDifferential { get { return ToDoMoney > 0 ? null : (decimal?)(Ammount * RefRate) - Deposits.Sum(p => p.Ammount * p.Rate); } }
+
+        public void AddParentDeposit(Deposit deposit)
+        {
+            Deposits.Add(deposit);
+        }
+    }
+
+    public class Deposit
+    {
+        public Deposit(decimal ammount, decimal rate, DateTime date)
+        {
+            Ammount = ammount;
+            Rate = rate;
+            Date = date;
+        }
+
+        public decimal Ammount { get; }
+        public decimal Rate { get; }
+        public DateTime Date { get; }
     }
 }

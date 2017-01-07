@@ -13,7 +13,7 @@ namespace Dywidendy.Model
             return File.ReadLines(path).Select(p =>
             {
                 var parts = p.Split(';');
-                return new ChangeDepositEvent(decimal.Parse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture),
+                return new MoneyChanged(decimal.Parse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture),
                     decimal.Parse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture),
                     DateTime.ParseExact(parts[0], "yyyy-MM-dd", CultureInfo.InvariantCulture));
             });

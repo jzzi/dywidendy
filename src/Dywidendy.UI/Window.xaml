@@ -49,9 +49,9 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" FontSize="16">Różnica kursowa (suma):</TextBlock>
-                            <TextBlock Grid.Column="1" FontSize="16" Text="{Binding RateDifferential.JustMoney}" />
+                            <TextBlock Grid.Column="1" FontSize="16" Text="{Binding LastWithdrawn.RateDifferential}" />
                         </Grid>
-                        <DataGrid ItemsSource="{Binding ResultComputed}"></DataGrid>                        
+                        <DataGrid ItemsSource="{Binding Withdrawns}"></DataGrid>                        
                         <DataGrid ItemsSource="{Binding RateDifferential}"></DataGrid>
                     </StackPanel>
                 </TabItem>

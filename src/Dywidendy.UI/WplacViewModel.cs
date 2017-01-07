@@ -5,6 +5,7 @@ using Dywidendy.Model;
 using Dywidendy.UI.Annotations;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Dywidendy.Model.Extensions;
 
 using DependencyAttribute = Microsoft.Practices.Unity.DependencyAttribute;
@@ -16,8 +17,8 @@ namespace Dywidendy.UI
         
         
         
-        private CalculationResult _resultComputed;
-        private RateDifferentialResult _rateDifferential;
+        private List<Withdrawn> _withdrawns;
+        private Withdrawn _lastWithdrawn;
         private ObservableCollection<IChangeDepositEvent> _events;
         private ICommand _addCommand;
         private ICommand _getCommand;
@@ -26,6 +27,7 @@ namespace Dywidendy.UI
         private RateFromBankViewModel _addViewModel;
         private RateFromBankViewModel _getViewModel;
         private decimal _currencyAmount;
+        private CurrencyModel _currencyModel;
 
 
         public WplacViewModel()
@@ -75,12 +77,12 @@ namespace Dywidendy.UI
         internal void Reload(IEnumerable<IChangeDepositEvent> events)
         {
             Events = new ObservableCollection<IChangeDepositEvent>(events);
-            var currencyModel = new CurrencyModel(() => Events);
-            AddCommand = new AddCommand(this, currencyModel);
-            GetCommand = new GetCommand(this, currencyModel);
-            OpenFileCommand = new OpenFileCommand(this, currencyModel);
+            _currencyModel = new CurrencyModel(() => Events);
+            AddCommand = new AddCommand(this, _currencyModel);
+            GetCommand = new GetCommand(this, _currencyModel);
+            OpenFileCommand = new OpenFileCommand(this, _currencyModel);
             SaveFileCommand = new SaveFileCommand(this);
-            CurrencyAmount = currencyModel.CurrencyAmount();
+            RefreshValues();
         }
 
         public decimal CurrencyAmount
@@ -139,24 +141,24 @@ namespace Dywidendy.UI
             }
         }
 
-        public CalculationResult ResultComputed
+        public List<Withdrawn> Withdrawns
         {
-            get { return _resultComputed; }
+            get { return _withdrawns; }
             set
             {
-                if (Equals(value, _resultComputed)) return;
-                _resultComputed = value;
+                if (Equals(value, _withdrawns)) return;
+                _withdrawns = value;
                 OnPropertyChanged();
             }
         }
 
-        public RateDifferentialResult RateDifferential
+        public Withdrawn LastWithdrawn
         {
-            get { return _rateDifferential; }
+            get { return _lastWithdrawn; }
             set
             {
-                if (value.Equals(_rateDifferential)) return;
-                _rateDifferential = value;
+                if (value == _lastWithdrawn) return;
+                _lastWithdrawn = value;
                 OnPropertyChanged();
             }
         }
@@ -168,6 +170,16 @@ namespace Dywidendy.UI
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void RefreshValues()
+        {
+
+            CurrencyAmount = _currencyModel.CurrencyAmount();
+            Withdrawns = _currencyModel.Withdrawns.ToList();
+            LastWithdrawn = Withdrawns.LastOrDefault();
+            Events = new ObservableCollection<IChangeDepositEvent>(_currencyModel.Events);
+            
         }
     }
     

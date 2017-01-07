@@ -2,9 +2,9 @@ using System;
 
 namespace Dywidendy.Model
 {
-    public class ChangeDepositEvent : IChangeDepositEvent
+    public class MoneyChanged : IChangeDepositEvent
     {
-        public ChangeDepositEvent(decimal value, decimal rate, DateTime date)
+        public MoneyChanged(decimal value, decimal rate, DateTime date)
         {
             Value = value;
             Rate = rate;
@@ -14,5 +14,7 @@ namespace Dywidendy.Model
         public decimal Value { get; }
         public decimal Rate { get; }
         public DateTime Date { get; }
+
+        
     }
 }
