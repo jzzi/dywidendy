@@ -10,7 +10,7 @@ namespace Dywidendy.Model
     {
         public static IEnumerable<IChangeDepositEvent> GetEventsFromFile(string path)
         {
-            return File.ReadLines(path).Select(p =>
+            return File.ReadLines(path).Where(p => p.Trim().Length > 0).Select(p =>
             {
                 var parts = p.Split(';');
                 return new MoneyChanged(decimal.Parse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture),
